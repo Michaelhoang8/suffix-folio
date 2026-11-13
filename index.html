@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Suffix Folio</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="/">Suffix Folio<span>TEXT / INDEX / REPETITION</span></a>
+      <div>
+        <button id="open">Open study</button
+        ><button id="save">Save study</button
+        ><input id="file" type="file" accept=".json,application/json" hidden />
+      </div>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">A reading room for algorithms</p>
+        <h1>Every ending.<br />A new beginning.</h1>
+        <p>
+          Turn a passage into a searchable index. Find what repeats, follow a
+          search, and see how the ordering takes shape.
+        </p>
+      </section>
+      <form id="study">
+        <label
+          >Source text<textarea
+            id="text"
+            rows="6"
+            maxlength="24000"
+            spellcheck="false"
+          ></textarea>
+        </label>
+        <div class="query">
+          <label
+            >Find a passage<input id="query" maxlength="512" required /></label
+          ><button type="submit" id="build">Build & search</button
+          ><button type="button" id="example">Example</button>
+        </div>
+      </form>
+      <p id="message" role="status"></p>
+      <div id="metrics" class="metrics"></div>
+      <section>
+        <div class="section-head">
+          <h2>In the passage</h2>
+          <p id="matches"></p>
+        </div>
+        <div id="passage" class="passage"></div>
+        <p class="caption">
+          Highlighted matches may overlap. Positions count Unicode code points,
+          starting at zero.
+        </p>
+        <div id="occurrences" class="occurrences"></div>
+      </section>
+      <section>
+        <h2>Longest repeated passages</h2>
+        <p class="caption">
+          All ties are retained. Repetitions may overlap; this is exact,
+          case-sensitive text matching.
+        </p>
+        <div id="repeats"></div>
+      </section>
+      <details>
+        <summary>Inside the suffix index</summary>
+        <div class="tools">
+          <label>Construction stage<select id="stage"></select></label
+          ><button id="previous">Previous page</button
+          ><span id="pagination"></span><button id="next">Next page</button>
+        </div>
+        <p id="round-note" class="caption"></p>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Start</th>
+                <th id="value-heading">LCP</th>
+                <th>Suffix preview</th>
+              </tr>
+            </thead>
+            <tbody id="suffixes"></tbody>
+          </table>
+        </div>
+        <p class="caption">
+          30 rows per page. Preview: first 70 code points; ↵ denotes a line
+          break and ⇥ a tab. Stored/exported text remains exact.
+        </p>
+      </details>
+      <details>
+        <summary>Binary-search evidence</summary>
+        <p class="caption">
+          Two searches delimit the matching suffixes in the half-open interval
+          [lower, upper). Comparison zero means the query is a prefix.
+        </p>
+        <p id="bounds"></p>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Bound</th>
+                <th>Low</th>
+                <th>High</th>
+                <th>Middle</th>
+                <th>Text position</th>
+                <th>Comparison</th>
+              </tr>
+            </thead>
+            <tbody id="trace"></tbody>
+          </table>
+        </div>
+      </details>
+      <div class="exports">
+        <button id="evidence" disabled>Export evidence</button
+        ><button id="csv" disabled>Export suffix CSV</button>
+      </div>
+      <details>
+        <summary>Reading the model</summary>
+        <p>
+          Suffixes are sorted by numeric Unicode code point, without locale
+          collation or normalization. Prefix doubling builds the index; Kasai's
+          algorithm computes adjacent longest common prefixes. The sum of suffix
+          lengths minus LCP lengths counts distinct nonempty substrings.
+        </p>
+        <p>
+          Up to 12,000 text code points and 256 query code points. Empty text is
+          valid; an empty query is rejected. Construction runs in a worker. This
+          is an in-memory teaching index, without fuzzy search, stemming,
+          incremental updates, or a persistent document database.
+        </p>
+      </details>
+    </main>
+    <footer>Look closely. The text contains its own index.</footer>
+  </body>
+</html>
