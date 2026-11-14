@@ -91,7 +91,34 @@ function render() {
     diff[p]++;
     diff[p + m.length]--;
   }
+  const canvas = $("match-map"),
+    ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, 900, 30);
+  ctx.fillStyle = "#ede5d6";
+  ctx.fillRect(0, 0, 900, 30);
+  ctx.fillStyle = "#b89543";
+  for (const p of m.positions)
+    ctx.fillRect(
+      (900 * p) / Math.max(1, b.chars.length),
+      0,
+      Math.max(1, (900 * m.length) / Math.max(1, b.chars.length)),
+      30,
+    );
+  canvas.setAttribute(
+    "aria-label",
+    `${m.positions.length} matches across ${b.chars.length} Unicode code points`,
+  );
+  $("map-end").textContent = `${b.chars.length} code points`;
+  $("selected-occurrence").textContent = "";
   const parts = [];
+  let bufferStart = 0;
+  function part(text, highlighted, end) {
+    const node = el(highlighted ? "mark" : "span", text);
+    node.dataset.start = bufferStart;
+    node.dataset.end = end;
+    bufferStart = end;
+    return node;
+  }
   let active = 0,
     buffer = "",
     highlight = false;
@@ -99,17 +126,43 @@ function render() {
     active += diff[i];
     const h = active > 0;
     if (h !== highlight && buffer) {
-      parts.push(el(highlight ? "mark" : "span", buffer));
+      parts.push(part(buffer, highlight, i));
       buffer = "";
     }
     highlight = h;
     buffer += b.chars[i];
   }
-  if (buffer) parts.push(el(highlight ? "mark" : "span", buffer));
+  if (buffer) parts.push(part(buffer, highlight, b.chars.length));
   $("passage").replaceChildren(...parts);
   if (!parts.length) $("passage").textContent = "Empty source text.";
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
+    $("passage").animate([{ opacity: 0.45 }, { opacity: 1 }], {
+      duration: 300,
+      easing: "ease-out",
+    });
   $("occurrences").replaceChildren(
-    ...m.positions.slice(0, 200).map((p) => el("span", `@ ${p}`)),
+    ...m.positions.slice(0, 200).map((p) => {
+      const button = el("button", `@ ${p}`);
+      button.type = "button";
+      button.setAttribute("aria-label", `Inspect match at code point ${p}`);
+      button.onclick = () => {
+        for (const mark of $("passage").querySelectorAll("mark")) {
+          const active =
+            p >= Number(mark.dataset.start) && p < Number(mark.dataset.end);
+          mark.classList.toggle("current-match", active);
+          if (active)
+            mark.scrollIntoView({
+              block: "nearest",
+              behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+                ? "instant"
+                : "smooth",
+            });
+        }
+        $("selected-occurrence").textContent =
+          `Match at code points ${p}–${p + m.length - 1}. Highlighted regions combine overlapping matches.`;
+      };
+      return button;
+    }),
   );
   if (m.positions.length > 200)
     $("occurrences").append(

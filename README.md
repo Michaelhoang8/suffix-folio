@@ -1,6 +1,6 @@
 # Suffix Folio
 
-A text-indexing workbench with suffix-array construction, exact substring search, longest repeated passages, and inspectable algorithm evidence. The quiet reading-room interface keeps construction tables and search decisions behind expandable sections.
+A text-indexing workbench with suffix-array construction, exact substring search, longest repeated passages, and inspectable algorithm evidence. A document preview and match-coverage strip show search results, while construction tables and search decisions stay behind expandable sections. Click an occurrence position to locate its highlighted region; overlapping matches share a highlight. Brief preview transitions respect reduced-motion settings.
 
 ![Text indexing workbench](docs/workbench.png)
 
@@ -21,7 +21,7 @@ Open http://127.0.0.1:8000 in a modern browser supporting module workers. Python
 - Follow both binary searches, including their half-open bounds, midpoints, text positions, and comparison results.
 - Save/open JSON studies; export full construction/search evidence and a suffix CSV. Editing inputs disables result exports until a successful rebuild.
 
-The [example](docs/example.json) has 102 code points, 4,748 distinct substrings, three occurrences of `river` at 10, 44, and 95, and a 27-code-point longest repeat beginning at 0 and 34. The repeated passage ends partway through a word: this is substring analysis, not token matching.
+The [example](docs/example.json) contains four service-log lines: 165 code points, 12,486 distinct substrings, and three occurrences of `service=api` at 5, 47, and 88. Its 34-code-point longest repeat starts at 4 and 87. Matching is by exact substring, without log parsing.
 
 ## Implementation
 
@@ -45,6 +45,6 @@ python -m unittest discover -s tests -v
 
 Six JavaScript tests include 400 random Unicode texts checked against exhaustive suffix, substring, longest-repeat, LCP, and occurrence oracles; construction-rank checks; numeric-code-point ordering; overlap; empty input; and maximum-size repetitive text. The Python server test checks asset allowlisting, Host validation, and HEAD semantics. CI runs Linux Node 22/24 and Windows Node 24.
 
-Browser verification covered construction paging, Unicode overlap, stale export disabling, empty/oversized text, recovery, study import, and JSON/CSV downloads. Independent Python reconstruction verified all 102 example suffixes, LCP lengths, 4,748 distinct substrings, query positions, longest-repeat length, and CSV rows.
+Browser verification covered construction paging, Unicode overlap, stale export disabling, empty/oversized text, recovery, study import, and JSON/CSV downloads. Independent Python reconstruction verified the current example’s 165 suffixes, LCP-derived distinct-substring count, query positions, and longest-repeat length.
 
 Algorithm background: Princeton's [suffix arrays](https://algs4.cs.princeton.edu/63suffix/) material explains adjacent-suffix repetition analysis. The code here is an independent implementation with explicit Unicode and bounded-input behavior.

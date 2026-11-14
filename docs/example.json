@@ -1,4 +1,4 @@
 {
-  "text": "the quiet river carries a letter.\nthe quiet river carries a lantern.\na letter returns with the river.\n",
-  "query": "river"
+  "text": "INFO service=api route=/orders status=200\nINFO service=api route=/items status=200\nWARN service=api route=/orders status=429\nINFO service=worker job=sync status=200\n",
+  "query": "service=api"
 }

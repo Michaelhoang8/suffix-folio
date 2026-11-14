@@ -9,7 +9,7 @@
   </head>
   <body>
     <header>
-      <a href="/">Suffix Folio<span>TEXT / INDEX / REPETITION</span></a>
+      <h1>Suffix Folio</h1>
       <div>
         <button id="open">Open study</button
         ><button id="save">Save study</button
@@ -17,52 +17,57 @@
       </div>
     </header>
     <main>
-      <section class="intro">
-        <p class="eyebrow">A reading room for algorithms</p>
-        <h1>Every ending.<br />A new beginning.</h1>
-        <p>
-          Turn a passage into a searchable index. Find what repeats, follow a
-          search, and see how the ordering takes shape.
-        </p>
-      </section>
       <form id="study">
-        <label
-          >Source text<textarea
-            id="text"
-            rows="6"
-            maxlength="24000"
-            spellcheck="false"
-          ></textarea>
-        </label>
-        <div class="query">
+        <details class="source-editor">
+          <summary>Edit source text</summary>
           <label
-            >Find a passage<input id="query" maxlength="512" required /></label
+            >Source text<textarea
+              id="text"
+              rows="6"
+              maxlength="24000"
+              spellcheck="false"
+            ></textarea>
+          </label>
+        </details>
+        <div class="query">
+          <label>Search text<input id="query" maxlength="512" required /></label
           ><button type="submit" id="build">Build & search</button
           ><button type="button" id="example">Example</button>
         </div>
       </form>
       <p id="message" role="status"></p>
       <div id="metrics" class="metrics"></div>
-      <section>
-        <div class="section-head">
-          <h2>In the passage</h2>
-          <p id="matches"></p>
-        </div>
-        <div id="passage" class="passage"></div>
-        <p class="caption">
-          Highlighted matches may overlap. Positions count Unicode code points,
-          starting at zero.
-        </p>
-        <div id="occurrences" class="occurrences"></div>
-      </section>
-      <section>
-        <h2>Longest repeated passages</h2>
-        <p class="caption">
-          All ties are retained. Repetitions may overlap; this is exact,
-          case-sensitive text matching.
-        </p>
-        <div id="repeats"></div>
-      </section>
+      <div class="reading-layout">
+        <section>
+          <div class="section-head">
+            <h2>Source preview</h2>
+            <p id="matches"></p>
+          </div>
+          <canvas
+            id="match-map"
+            width="900"
+            height="30"
+            role="img"
+            aria-label="Match coverage across source text"
+          ></canvas>
+          <div class="map-labels"><span>0</span><span id="map-end"></span></div>
+          <div id="passage" class="passage"></div>
+          <p class="caption">
+            Highlighted matches may overlap. Positions count Unicode code
+            points, starting at zero.
+          </p>
+          <div id="occurrences" class="occurrences"></div>
+          <p id="selected-occurrence" class="caption"></p>
+        </section>
+        <section>
+          <h2>Longest repeats</h2>
+          <p class="caption">
+            All ties are retained. Repetitions may overlap; this is exact,
+            case-sensitive text matching.
+          </p>
+          <div id="repeats"></div>
+        </section>
+      </div>
       <details>
         <summary>Inside the suffix index</summary>
         <div class="tools">
@@ -132,6 +137,5 @@
         </p>
       </details>
     </main>
-    <footer>Look closely. The text contains its own index.</footer>
   </body>
 </html>
